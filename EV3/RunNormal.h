@@ -6,6 +6,8 @@
 
 #include "ev3api.h"
 #include "RunMain.h"
+
+extern FILE *bt;
 	
 class RunNormal : public RunMain
 {

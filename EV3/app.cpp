@@ -27,7 +27,7 @@
 #endif
 
 static int      bt_cmd = 0;     /* Bluetoothコマンド 1:リモートスタート */
-static FILE     *bt = NULL;     /* Bluetoothファイルハンドル */
+FILE     *bt = NULL;     /* Bluetoothファイルハンドル */
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 /* sample_c3マクロ */
@@ -53,18 +53,25 @@ static void tail_control(signed int angle);
 #include "RunGarage.h"
 #include "RunGate.h"
 #include "RunSeesaw.h"
-RunMain* runmain;
+RunMain *runmain;
 #include "Motor.h"
-Motor* _motor;
+Motor *_motor;
 #include "GyroSensor.h"
-GyroSensor* _gyrosensor;
+GyroSensor *_gyrosensor;
 #include "ColorSensor.h"
-ColorSensor* _colorsensor;
+ColorSensor *_colorsensor;
 #include "TouchSensor.h"
-TouchSensor* _touchsensor;
+TouchSensor *_touchsensor;
 #include "SonarSensor.h"
-SonarSensor* _sonarsensor;
+SonarSensor *_sonarsensor;
 
+int runmode = 0;
+typedef enum {
+		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
+		SEESAW_RUNMODE, //シーソー
+		GATE_RUNMODE,   //ルックアップゲート
+		GARAGE_RUNMODE, //車庫入れ
+	} run_mode_t;
 
 /* メインタスク */
 void main_task(intptr_t unused)
@@ -75,10 +82,15 @@ void main_task(intptr_t unused)
   ev3_lcd_draw_string("EV3way-ET sample_cpp4", 0, CALIB_FONT_HEIGHT*1);
 
   /* 各センサー類の初期化 */
+  _motor = new Motor;
   _motor->init();
+  _gyrosensor = new GyroSensor;
   _gyrosensor->init();
+  _colorsensor = new ColorSensor;
   _colorsensor->init();
+  _touchsensor = new TouchSensor;
   _touchsensor->init();
+  _sonarsensor = new SonarSensor;
   _sonarsensor->init();
 
   /* Open Bluetooth file */
@@ -115,7 +127,32 @@ void main_task(intptr_t unused)
   runmain->init();
 
   ev3_led_set_color(LED_GREEN); /* スタート通知 */
-
+	
+   fprintf(bt, "runmode %d", runmode);
+	  //走行処理
+	  switch (runmode) {
+	  case NORMAL_RUNMODE:
+	  	  fprintf(bt, "%s\n", "RunNormal");
+		  runmain = new RunNormal;
+			  break;
+	  case SEESAW_RUNMODE:
+	  	  fprintf(bt, "%s\n", "RunSeesaw");
+		  runmain = new RunSeesaw;
+			  break;
+	  case GATE_RUNMODE:
+	  	  fprintf(bt, "%s\n", "RunGate");
+		  runmain = new RunGate;
+			  break;
+	  case GARAGE_RUNMODE:
+	  	  fprintf(bt, "%s\n", "RunGarage");
+		  runmain = new RunGarage;
+			  break;
+	  default:
+	  	fprintf(bt, "%s\n", "RunMain");
+		  runmain = new RunMain;
+			  break;
+	  }
+	
   /**
    * Main loop for the self-balance control algorithm
    */
@@ -125,25 +162,6 @@ void main_task(intptr_t unused)
       if (ev3_button_is_pressed(BACK_BUTTON)) break;
 
       tail_control(TAIL_ANGLE_DRIVE); /* バランス走行用角度に制御 */
-
-	  //走行処理
-	  switch (runmain->runmode) {
-	  case runmain->NORMAL_RUNMODE:
-		  runmain = new RunNormal;
-			  break;
-	  case runmain->SEESAW_RUNMODE:
-		  runmain = new RunSeesaw;
-			  break;
-	  case runmain->GATE_RUNMODE:
-		  runmain = new RunGate;
-			  break;
-	  case runmain->GARAGE_RUNMODE:
-		  runmain = new RunGarage;
-			  break;
-	  default:
-		  runmain = new RunMain;
-			  break;
-	  }
 	  runmain->run();
 
       tslp_tsk(4); /* 4msec周期起動 */

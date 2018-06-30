@@ -7,6 +7,8 @@
 #include "RunMain.h"
 #include "ev3api.h"
 
+extern FILE *bt;
+
 /**
  * コンストラクタ
  */
@@ -18,6 +20,6 @@ RunNormal::RunNormal()
 *処理開始
 */
 void RunNormal::run() {
-	move(50);
+	move(30);
 }
 

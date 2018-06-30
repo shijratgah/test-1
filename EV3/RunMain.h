@@ -5,6 +5,12 @@
 #define RUNMAIN_H_
 
 #include "ev3api.h"
+
+#define GYRO_OFFSET  0       /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
+#define LIGHT_WHITE  55         /* 白色の光センサ値 */
+#define LIGHT_BLACK  0          /* 黒色の光センサ値 */
+
+extern FILE *bt;
 	
 class RunMain
 {
@@ -15,15 +21,6 @@ public:
 	int getTurn();
 	void move(int);
 	void stop();
-
-	int runmode = 0;
-
-	typedef enum {
-		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
-		SEESAW_RUNMODE = 1, //シーソー
-		GATE_RUNMODE = 2,   //ルックアップゲート
-		GARAGE_RUNMODE = 3, //車庫入れ
-	} run_mode_t;
 	
 	int forward = 0;      /* 前後進命令 */
 	int turn = 0;         /* 旋回命令 */

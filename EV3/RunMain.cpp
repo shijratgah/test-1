@@ -8,7 +8,7 @@
 #include "BalancerCpp.h"
 Balancer balancer;
 #include "PID.h"
-PID pid;
+PID *pid;
 #include "Motor.h"
 Motor motor;
 #include "GyroSensor.h"
@@ -16,16 +16,13 @@ GyroSensor gyrosensor;
 #include "ColorSensor.h"
 ColorSensor colorsensor;
 
-#define GYRO_OFFSET  0       /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
-#define LIGHT_WHITE  55         /* 白色の光センサ値 */
-#define LIGHT_BLACK  0          /* 黒色の光センサ値 */
-
 /**
  * コンストラクタ
  */
 RunMain::RunMain()
 {
 	target = (LIGHT_WHITE + LIGHT_BLACK)/2;
+	pid = new PID();
 }
 
 /**
@@ -39,6 +36,7 @@ void RunMain::init(){
 *処理開始
 */
 void RunMain::run() {
+	move(30);
 }
 
 /*
@@ -46,7 +44,7 @@ void RunMain::run() {
  */
 int RunMain::getTurn(){
 	int diff = target - colorsensor.getReflect();
-    return pid.calcControllValue(diff);
+    return pid->calcControllValue(diff);
 }
 
 /*

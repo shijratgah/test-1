@@ -5,10 +5,6 @@
 
 #include "PID.h"
 
-#define KP  0.80
-#define KI  0.0405 
-#define KD  0.038
-
 /**
  * コンストラクタ
  */

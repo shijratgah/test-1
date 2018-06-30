@@ -24,9 +24,6 @@ ColorSensor colorsensor;
  * コンストラクタ
  */
 RunMain::RunMain()
-	: forward(0),
-	turn(0),
-	runmode(0)
 {
 	target = (LIGHT_WHITE + LIGHT_BLACK)/2;
 }

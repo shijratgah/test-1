@@ -25,6 +25,6 @@ void SonarSensor::init(){
 * áŠQ•¨‚Æ‚Ì‹——£‚ğæ“¾‚·‚é
 */
 int SonarSensor::getDetection() {
-	ev3_ultrasonic_sensor_get_distance(sonar_sensor);
+	return ev3_ultrasonic_sensor_get_distance(sonar_sensor);
 }
 

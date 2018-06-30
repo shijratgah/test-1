@@ -16,7 +16,7 @@ public:
 	void move(int);
 	void stop();
 
-	int runmode;
+	int runmode = 0;
 
 	typedef enum {
 		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
@@ -24,14 +24,15 @@ public:
 		GATE_RUNMODE = 2,   //ルックアップゲート
 		GARAGE_RUNMODE = 3, //車庫入れ
 	} run_mode_t;
-
-private:
-	int forward;      /* 前後進命令 */
-	int turn;         /* 旋回命令 */
+	
+	int forward = 0;      /* 前後進命令 */
+	int turn = 0;         /* 旋回命令 */
 	int pwm_L, pwm_R; /* 左右モータPWM出力 */
 	int gyro, volt;
 	int32_t motor_ang_l, motor_ang_r;
 	float target;
+
+private:
 
 };
 

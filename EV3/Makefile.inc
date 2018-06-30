@@ -12,6 +12,6 @@ APPL_CXXOBJS += BalancerCpp.o \
 				RunNormal.o \
 				RunSeesaw.o \
 				TouchSensor.o \
-				TouchSensor.o \
+				SonarSensor.o \
 
 SRCLANG := c++

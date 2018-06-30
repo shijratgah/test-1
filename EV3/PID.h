@@ -7,17 +7,16 @@
 class PID
 {
 public:
-	static int calcControllValue(int);
+	PID();
+	int calcControllValue(int);
 
 private:
-	PID();
-	
-	static int math_limit(int,int,int);
-	static int diff;
-	static int m_d_now;
-	static int m_d_pre;
-	static int m_i_list[13];
-	static int m_num;
+	int math_limit(int,int,int);
+	int diff;
+	int m_d_now;
+	int m_d_pre;
+	int m_i_list[13];
+	int m_num;
 };
 
 #endif

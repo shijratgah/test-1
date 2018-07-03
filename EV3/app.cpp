@@ -65,12 +65,12 @@ TouchSensor *_touchsensor;
 #include "SonarSensor.h"
 SonarSensor *_sonarsensor;
 
-int runmode = 0;
+int runmode = 3;
 typedef enum {
 		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
 		SEESAW_RUNMODE, //シーソー
 		GATE_RUNMODE,   //ルックアップゲート
-		GARAGE_RUNMODE, //車庫入れ
+		GARAGE_RUNMODE = 3, //車庫入れ
 	} run_mode_t;
 
 /* メインタスク */

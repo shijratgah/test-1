@@ -41,6 +41,9 @@ int RunMain::getTurn(){
 	return pid->calcControllValue(diff);
 }
 
+/*
+ *‘¬‚³‚ðŽæ“¾‚·‚é
+ */
 int RunMain::getForward(){
 	return forward;
 }

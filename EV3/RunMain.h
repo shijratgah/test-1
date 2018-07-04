@@ -17,7 +17,7 @@ class RunMain
 public:
 	RunMain();
 	void init();
-	void run();
+	virtual void run();
 	int getTurn();
 	int getForward();
 	void move(int);

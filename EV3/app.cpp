@@ -70,12 +70,12 @@ SonarSensor *_sonarsensor;
 Balancer balancer;
 
 
-int runmode = 0;
+int runmode = 1;
 typedef enum {
 		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
 		SEESAW_RUNMODE = 1, //シーソー
-		GATE_RUNMODE,   //ルックアップゲート
-		GARAGE_RUNMODE, //車庫入れ
+		GATE_RUNMODE   = 2,   //ルックアップゲート
+		GARAGE_RUNMODE = 3, //車庫入れ
 	} run_mode_t;
 
 /* メインタスク */
@@ -233,8 +233,8 @@ void bt_task(intptr_t unused){
 
 
 /*
-バランスを制御するタスク
-*/
+ *バランスを制御するタスク
+ */
 void bln_task(intptr_t unused){
 	//セットする値の取得
 	
@@ -245,7 +245,7 @@ void bln_task(intptr_t unused){
 		int32_t motor_ang_r = _motor->getAngle(_motor->right_motor);
 		int gyro = _gyrosensor->getRate();
 		int volt = ev3_battery_voltage_mV();
-		int turn = runmain->getTurn();
+		int turn = 0;//runmain->getTurn();
 		int forward = runmain->getForward();
 		
 		//バランサーに値のセット。回転量の取得

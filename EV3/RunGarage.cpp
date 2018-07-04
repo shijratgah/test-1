@@ -10,14 +10,15 @@
 /**
  * コンストラクタ
  */
-RunGarage::RunGarage()
-{
+RunGarage::RunGarage(){
+	
 }
 
 /**
 *処理開始
 */
 void RunGarage::run() {
-	move(50);
+	
+	move(30);
 }
 

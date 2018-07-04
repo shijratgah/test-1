@@ -79,109 +79,107 @@ typedef enum {
 	} run_mode_t;
 
 /* メインタスク */
-void main_task(intptr_t unused)
-{
+void main_task(intptr_t unused){
 
-  /* LCD画面表示 */
-  ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
-  ev3_lcd_draw_string("EV3way-ET sample_cpp4", 0, CALIB_FONT_HEIGHT*1);
+	/* LCD画面表示 */
+	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
+	ev3_lcd_draw_string("EV3way-ET sample_cpp4", 0, CALIB_FONT_HEIGHT*1);
 
-  /* 各センサー類の初期化 */
-  _motor = new Motor;
-  _motor->init();
-  _gyrosensor = new GyroSensor;
-  _gyrosensor->init();
-  _colorsensor = new ColorSensor;
-  _colorsensor->init();
-  _touchsensor = new TouchSensor;
-  _touchsensor->init();
-  _sonarsensor = new SonarSensor;
-  _sonarsensor->init();
+	/* 各センサー類の初期化 */
+	_motor = new Motor;
+	_motor->init();
+	_gyrosensor = new GyroSensor;
+	_gyrosensor->init();
+	_colorsensor = new ColorSensor;
+	_colorsensor->init();
+	_touchsensor = new TouchSensor;
+	_touchsensor->init();
+	_sonarsensor = new SonarSensor;
+	_sonarsensor->init();
 
-  /* Open Bluetooth file */
-  bt = ev3_serial_open_file(EV3_SERIAL_BT);
-  assert(bt != NULL);
+	/* Open Bluetooth file */
+	bt = ev3_serial_open_file(EV3_SERIAL_BT);
+	assert(bt != NULL);
 
-  /* Bluetooth通信タスクの起動 */
-  act_tsk(BT_TASK);
+	/* Bluetooth通信タスクの起動 */
+	act_tsk(BT_TASK);
 
-  ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-  ev3_motor_rotate(_motor->tail_motor, TAIL_ANGLE_STAND_UP, PWM_ABS_MAX, true);
-  //ev3_lcd_draw_string("尻尾処理前", 0, CALIB_FONT_HEIGHT*1);
-  /* スタート待機 */
-  while(1)
-    {
-      ev3_lcd_draw_string("          ", 0, CALIB_FONT_HEIGHT*1);
-      ev3_lcd_draw_string("ready", 0, CALIB_FONT_HEIGHT*1);
-      //tail_control(TAIL_ANGLE_STAND_UP); /* 完全停止用角度に制御 */
+	ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
+	ev3_motor_rotate(_motor->tail_motor, TAIL_ANGLE_STAND_UP, PWM_ABS_MAX, true);
+	//ev3_lcd_draw_string("尻尾処理前", 0, CALIB_FONT_HEIGHT*1);
+	/* スタート待機 */
+	while(1){
+		ev3_lcd_draw_string("          ", 0, CALIB_FONT_HEIGHT*1);
+		ev3_lcd_draw_string("ready", 0, CALIB_FONT_HEIGHT*1);
+		//tail_control(TAIL_ANGLE_STAND_UP); /* 完全停止用角度に制御 */
 
-      if (bt_cmd == 1)
-        {
-          break; /* リモートスタート */
-        }
+		if (bt_cmd == 1){
+			break; /* リモートスタート */
+		}
 
-      tslp_tsk(10); /* 10msecウェイト */
-    }
+		tslp_tsk(10); /* 10msecウェイト */
+	}
 
-  /* 走行モーターエンコーダーリセット */
-  _motor->reset(_motor->left_motor);
-  _motor->reset(_motor->right_motor);
+	/* 走行モーターエンコーダーリセット */
+	_motor->reset(_motor->left_motor);
+	_motor->reset(_motor->right_motor);
 
-  /* ジャイロセンサーリセット */
-  _gyrosensor->reset();
-  balancer.init(GYRO_OFFSET);
+	/* ジャイロセンサーリセット */
+	_gyrosensor->reset();
+	balancer.init(GYRO_OFFSET);
 
-  ev3_led_set_color(LED_GREEN); /* スタート通知 */
+	ev3_led_set_color(LED_GREEN); /* スタート通知 */
+
+	fprintf(bt, "runmode %d", runmode);
+		//走行処理
+		switch (runmode) {
+			case NORMAL_RUNMODE:
+				fprintf(bt, "%s\r\n", "RunNormal");
+				runmain = new RunNormal;
+				act_tsk(BLN_TASK);
+				break;
+			case SEESAW_RUNMODE:
+				fprintf(bt, "%s\r\n", "RunSeesaw");
+				runmain = new RunSeesaw;
+				act_tsk(BLN_TASK);
+				break;
+			case GATE_RUNMODE:
+				fprintf(bt, "%s\r\n", "RunGate");
+				runmain = new RunGate;
+				act_tsk(BLN_TASK);
+				break;
+			case GARAGE_RUNMODE:
+				fprintf(bt, "%s\r\n", "RunGarage");
+				runmain = new RunGarage;
+				act_tsk(BLN_TASK);
+				break;
+			default:
+				fprintf(bt, "%s\r\n", "RunMain");
+				runmain = new RunMain;
+				act_tsk(BLN_TASK);
+				break;
+		}
 	
-  act_tsk(BLN_TASK);
-	
-   fprintf(bt, "runmode %d", runmode);
-	  //走行処理
-	  switch (runmode) {
-	  case NORMAL_RUNMODE:
-	  	  fprintf(bt, "%s\r\n", "RunNormal");
-		  runmain = new RunNormal;
-			  break;
-	  case SEESAW_RUNMODE:
-	  	  fprintf(bt, "%s\r\n", "RunSeesaw");
-		  runmain = new RunSeesaw;
-			  break;
-	  case GATE_RUNMODE:
-	  	  fprintf(bt, "%s\r\n", "RunGate");
-		  runmain = new RunGate;
-			  break;
-	  case GARAGE_RUNMODE:
-	  	  fprintf(bt, "%s\r\n", "RunGarage");
-		  runmain = new RunGarage;
-			  break;
-	  default:
-	  	fprintf(bt, "%s\r\n", "RunMain");
-		  runmain = new RunMain;
-			  break;
-	  }
-	
-  /**
-   * Main loop for the self-balance control algorithm
-   */
-  while(1)
-    {
+	/**
+	* Main loop for the self-balance control algorithm
+	*/
+	while(1){
+		if (bt_cmd == 2) break;
 
-      if (ev3_button_is_pressed(BACK_BUTTON)) break;
+		tail_control(TAIL_ANGLE_DRIVE);/* バランス走行用角度に制御 */
+		fprintf(bt, "%s\r\n", "テイルコントロール");
+		runmain->run();
 
-      tail_control(TAIL_ANGLE_DRIVE);/* バランス走行用角度に制御 */
-      fprintf(bt, "%s\r\n", "テイルコントロール");
-	  runmain->run();
-
-      tslp_tsk(4); /* 4msec周期起動 */
-    }
+		tslp_tsk(4); /* 4msec周期起動 */
+	}
   
-  runmain->stop();
+	runmain->stop();
 
-  ter_tsk(BT_TASK);
-  ter_tsk(BLN_TASK);
-  fclose(bt);
+	ter_tsk(BT_TASK);
+	ter_tsk(BLN_TASK);
+	fclose(bt);
 
-  ext_tsk();
+	ext_tsk();
 }
 
 //*****************************************************************************
@@ -190,27 +188,23 @@ void main_task(intptr_t unused)
 // 返り値 : 無し
 // 概要 : 走行体完全停止用モータの角度制御
 //*****************************************************************************
-static void tail_control(signed int angle)
-{
-  float pwm = (float)(angle - _motor->getAngle(_motor->tail_motor))*P_GAIN; /* 比例制御 */
-  /* PWM出力飽和処理 */
-  if (pwm > PWM_ABS_MAX)
-    {
-      pwm = PWM_ABS_MAX;
-    }
-  else if (pwm < -PWM_ABS_MAX)
-    {
-      pwm = -PWM_ABS_MAX;
-    }
+static void tail_control(signed int angle){
 
-  if (pwm == 0)
-    {
-      ev3_motor_stop(_motor->tail_motor, true);
-    }
-  else
-    {
-      ev3_motor_set_power(_motor->tail_motor, (signed char)pwm);
-    }
+	float pwm = (float)(angle - _motor->getAngle(_motor->tail_motor))*P_GAIN; /* 比例制御 */
+	/* PWM出力飽和処理 */
+	if (pwm > PWM_ABS_MAX){
+		pwm = PWM_ABS_MAX;
+	}
+	else if (pwm < -PWM_ABS_MAX){
+		pwm = -PWM_ABS_MAX;
+	}
+
+	if (pwm == 0){
+		ev3_motor_stop(_motor->tail_motor, true);
+	}
+	else{
+		ev3_motor_set_power(_motor->tail_motor, (signed char)pwm);
+	}
 }
 
 //*****************************************************************************
@@ -220,62 +214,63 @@ static void tail_control(signed int angle)
 // 概要 : Bluetooth通信によるリモートスタート。 Tera Termなどのターミナルソフトから、
 //       ASCIIコードで1を送信すると、リモートスタートする。
 //*****************************************************************************
-void bt_task(intptr_t unused)
-{
-  while(1)
-    {
-      uint8_t c = fgetc(bt); /* 受信 */
-      switch(c)
-        {
-        case '1':
-          bt_cmd = 1;
-          break;
-        default:
-          break;
-        }
-      fputc(c, bt); /* エコーバック */
-    }
+void bt_task(intptr_t unused){
+	while(1){
+		uint8_t c = fgetc(bt); /* 受信 */
+		switch(c){
+			case '1':
+				bt_cmd = 1;
+				break;
+			case '2':
+				bt_cmd = 2;
+				break;
+		default:
+				break;
+		}
+		fputc(c, bt); /* エコーバック */
+	}
 }
 
+
+/*
+バランスを制御するタスク
+*/
 void bln_task(intptr_t unused){
 	//セットする値の取得
 	
 	while(1){
-	 	signed char pwm_L, pwm_R;
-	 	int32_t motor_ang_l = _motor->getAngle(_motor->left_motor);
-     	int32_t motor_ang_r = _motor->getAngle(_motor->right_motor);
-     	int gyro = _gyrosensor->getRate();
-     	int volt = ev3_battery_voltage_mV();
-	 	int turn = runmain->getTurn();
-		int forward = runmain->forward;
-	
-	 	//バランサーに値のセット。回転量の取得
-	 	balancer.setCommand(forward, turn);
-     	balancer.update(gyro, motor_ang_r, motor_ang_l, volt);
-	 	pwm_L = balancer.getPwmRight();
-     	pwm_R = balancer.getPwmLeft();
-	 
-	 	//左右のモータにセット
-	 	/* EV3ではモーター停止時のブレーキ設定が事前にできないため */
-     	/* 出力0時に、その都度設定する */
-     	if (pwm_L == 0)
-       	{
-         	ev3_motor_stop(_motor->left_motor, true);
-       	}
-     	else
-       	{
-        	ev3_motor_set_power(_motor->left_motor, (int)pwm_L);
-       	}
-     
-     	if (pwm_R == 0)
-       	{
-         	ev3_motor_stop(_motor->right_motor, true);
-       	}
-     	else
-       	{
-         	ev3_motor_set_power(_motor->right_motor, (int)pwm_R);
-       	}
-	
+		fprintf(bt, "%s\r\n", "task");
+		signed char pwm_L, pwm_R;
+		int32_t motor_ang_l = _motor->getAngle(_motor->left_motor);
+		int32_t motor_ang_r = _motor->getAngle(_motor->right_motor);
+		int gyro = _gyrosensor->getRate();
+		int volt = ev3_battery_voltage_mV();
+		int turn = runmain->getTurn();
+		int forward = runmain->getForward();
+		
+		//バランサーに値のセット。回転量の取得
+		balancer.setCommand(forward, turn);
+		balancer.update(gyro, motor_ang_r, motor_ang_l, volt);
+		pwm_L = balancer.getPwmRight();
+		pwm_R = balancer.getPwmLeft();
+		
+		//左右のモータにセット
+		/* EV3ではモーター停止時のブレーキ設定が事前にできないため */
+		/* 出力0時に、その都度設定する */
+		if (pwm_L == 0){
+			ev3_motor_stop(_motor->left_motor, true);
+		}
+		else{
+			ev3_motor_set_power(_motor->left_motor, (int)pwm_L);
+		}
+		
+		if (pwm_R == 0){
+			ev3_motor_stop(_motor->right_motor, true);
+		}
+		else{
+			ev3_motor_set_power(_motor->right_motor, (int)pwm_R);
+		}
+		
 		tslp_tsk(4);
 	}
 }

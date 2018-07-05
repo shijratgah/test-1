@@ -6,7 +6,7 @@
 
 #include "ev3api.h"
 
-#define GYRO_OFFSET  0       /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
+//#define GYRO_OFFSET  0       /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
 #define LIGHT_WHITE  55         /* 白色の光センサ値 */
 #define LIGHT_BLACK  0          /* 黒色の光センサ値 */
 
@@ -17,8 +17,9 @@ class RunMain
 public:
 	RunMain();
 	void init();
-	void run();
+	virtual void run();
 	int getTurn();
+	int getForward();
 	void move(int);
 	void stop();
 	

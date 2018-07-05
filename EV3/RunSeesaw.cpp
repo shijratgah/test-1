@@ -7,6 +7,7 @@
 #include "RunMain.h"
 #include "ev3api.h"
 
+
 /**
  * コンストラクタ
  */
@@ -19,5 +20,6 @@ RunSeesaw::RunSeesaw()
 */
 void RunSeesaw::run() {
 	move(50);
+	fprintf(bt, "%s\r\n", "seesaw");
 }
 

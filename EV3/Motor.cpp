@@ -2,7 +2,6 @@
  * Motor.cpp
  * モータクラス
  */
-
 #include "ev3api.h"
 #include "Motor.h"
 
@@ -49,10 +48,11 @@ int32_t Motor::getAngle(motor_port_t motor) {
 /*
 * 移動距離
 */
-void Motor::setMovedistance() {
+void Motor::setMovedistance(int _movedistance) {
 	//移動距離の計算
-	movedistance = int((360 / (9.8 * 3.141592)) * 50);//50は決め打ち 結果 movedistance = 585 コンパイル成功
+	movedistance = int((360 / (9.8 * 3.141592)) * _movedistance);
 }
+
 int Motor::getMovedistance() {
 	return movedistance;
 }

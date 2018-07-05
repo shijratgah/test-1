@@ -70,7 +70,7 @@ SonarSensor *_sonarsensor;
 Balancer balancer;
 
 
-int runmode = 1;
+int runmode = 2;
 typedef enum {
 		NORMAL_RUNMODE = 0, //通常走行（ライントレース）
 		SEESAW_RUNMODE = 1, //シーソー
@@ -130,7 +130,7 @@ void main_task(intptr_t unused){
 
 	ev3_led_set_color(LED_GREEN); /* スタート通知 */
 
-	fprintf(bt, "runmode %d", runmode);
+	fprintf(bt, "runmode:%d\r\n", runmode);
 		//走行処理
 		switch (runmode) {
 			case NORMAL_RUNMODE:
@@ -165,12 +165,10 @@ void main_task(intptr_t unused){
 	*/
 	while(1){
 		if (bt_cmd == 2) break;
-
 		tail_control(TAIL_ANGLE_DRIVE);/* バランス走行用角度に制御 */
-		fprintf(bt, "%s\r\n", "テイルコントロール");
 		runmain->run();
 
-		tslp_tsk(4); /* 4msec周期起動 */
+		//tslp_tsk(4); /* 4msec周期起動 */
 	}
   
 	runmain->stop();
@@ -227,19 +225,17 @@ void bt_task(intptr_t unused){
 		default:
 				break;
 		}
-		fputc(c, bt); /* エコーバック */
 	}
 }
 
 
 /*
- *バランスを制御するタスク
- */
+バランスを制御するタスク
+*/
 void bln_task(intptr_t unused){
 	//セットする値の取得
 	
 	while(1){
-		fprintf(bt, "%s\r\n", "task");
 		signed char pwm_L, pwm_R;
 		int32_t motor_ang_l = _motor->getAngle(_motor->left_motor);
 		int32_t motor_ang_r = _motor->getAngle(_motor->right_motor);

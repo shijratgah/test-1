@@ -14,7 +14,7 @@ public:
 	void reset(motor_port_t);
 	void stop();
 	int32_t getAngle(motor_port_t);
-	void setMovedistance();
+	void setMovedistance(int _movedistance);
 	int getMovedistance();
 
 	static const motor_port_t

@@ -30,7 +30,6 @@ RunMain::RunMain()
 */
 void RunMain::run() {
 	move(30);
-	fprintf(bt, "%s\r\n", "move");
 }
 
 /*
